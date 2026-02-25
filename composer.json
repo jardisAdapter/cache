@@ -1,52 +1,54 @@
 {
-  "name": "jardisadapter/cache",
-  "version": "1.0.0",
-  "description": "Advanced PSR-16 compliant multi-layer caching library",
-  "type": "library",
-  "license": "PolyForm-Noncommercial-1.0.0",
-  "minimum-stability": "stable",
-  "prefer-stable": true,
-  "authors": [
-    {
-      "name": "Jardis Development",
-      "email": "jardisDev@headgent.com"
-    }
-  ],
-  "require": {
-    "php": ">=8.2",
-    "psr/container": "^2.0",
-    "psr/simple-cache": "^3.0",
-    "ext-pdo": "*",
-    "ext-redis": "*",
-    "ext-json": "*",
-    "ext-apcu": "*"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "^10.5",
-    "phpstan/phpstan": "^2.0.4",
-    "squizlabs/php_codesniffer": "^3.11.2"
-  },
-  "autoload": {
-    "psr-4": {
-      "JardisAdapter\\Cache\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "JardisAdapter\\Cache\\Tests\\": "tests/"
-    }
-  },
-  "scripts": {
-    "post-install-cmd": [
-      "echo '#!/usr/bin/env bash' > .git/hooks/pre-commit",
-      "echo 'bash ./support/pre-commit-hook.sh' >> .git/hooks/pre-commit",
-      "chmod +x .git/hooks/pre-commit"
+    "name": "jardisadapter/cache",
+    "version": "1.0.0",
+    "description": "Advanced PSR-16 compliant multi-layer caching library",
+    "type": "library",
+    "license": "PolyForm-Noncommercial-1.0.0",
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "authors": [
+        {
+            "name": "Jardis Development",
+            "email": "jardisDev@headgent.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "psr/container": "^2.0",
+        "psr/simple-cache": "^3.0",
+        "ext-pdo": "*",
+        "ext-redis": "*",
+        "ext-json": "*",
+        "ext-apcu": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5",
+        "phpstan/phpstan": "^2.0.4",
+        "squizlabs/php_codesniffer": "^3.11.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "JardisAdapter\\Cache\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "JardisAdapter\\Cache\\Tests\\": "tests/"
+        }
+    },
+    "homepage": "https://github.com/jardisAdapter/cache",
+    "support": {
+        "issues": "https://github.com/jardisAdapter/cache/issues",
+        "email": "jardisDev@headgent.com"
+    },
+    "keywords": [
+        "cache",
+        "database",
+        "redis",
+        "memory",
+        "file",
+        "domain driven design",
+        "Jardis",
+        "Headgent"
     ]
-  },
-  "homepage": "https://github.com/jardisAdapter/cache",
-  "support": {
-    "issues": "https://github.com/jardisAdapter/cache/issues",
-    "email": "jardisDev@headgent.com"
-  },
-  "keywords": ["cache", "database", "redis", "memory", "file", "domain driven design", "Jardis", "Headgent"]
 }
