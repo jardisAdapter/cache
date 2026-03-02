@@ -1,6 +1,5 @@
 {
     "name": "jardisadapter/cache",
-    "version": "1.0.0",
     "description": "Advanced PSR-16 compliant multi-layer caching library",
     "type": "library",
     "license": "PolyForm-Noncommercial-1.0.0",
