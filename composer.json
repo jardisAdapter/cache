@@ -1,7 +1,7 @@
 {
     "name": "jardisadapter/cache",
     "homepage": "https://docs.jardis.io/en/adapter/cache",
-    "description": "PSR-16 multi-layer caching engine with write-through propagation across Redis, APCu, Database, and Memory",
+    "description": "PSR-16 multi-layer cache for PHP — stack Memory, APCu, Redis, and Database backends with automatic read-through backfill and write-through propagation; a building block of the open-source foundation that Jardis-generated DDD code runs on",
     "type": "library",
     "license": "MIT",
     "minimum-stability": "stable",
@@ -49,8 +49,11 @@
         "redis",
         "memory",
         "file",
-        "domain driven design",
-        "Jardis",
-        "Headgent"
+        "domain-driven-design",
+        "hexagonal-architecture",
+        "psr-16",
+        "multi-layer-cache",
+        "php",
+        "jardis"
     ]
 }

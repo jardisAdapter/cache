@@ -8,9 +8,9 @@
 [![PSR-16](https://img.shields.io/badge/Cache-PSR--16-brightgreen.svg)](https://www.php-fig.org/psr/psr-16/)
 [![Coverage](https://img.shields.io/badge/Coverage-84.51%25-green.svg)](https://github.com/jardisAdapter/cache)
 
-> Part of the **[Jardis Business Platform](https://jardis.io)** — Enterprise-grade PHP components for Domain-Driven Design
+> Part of **[Jardis](https://jardis.io)** — the Domain-Driven Design platform for PHP. You model your domain; Jardis generates the production-ready hexagonal code (DTOs, Command/Query handlers, repositories, persistence). This package is part of the open-source foundation that generated code runs on.
 
-PSR-16 multi-layer caching engine. Chain Memory, APCu, Redis, and Database backends in a single `Cache` instance. On a cache miss in a fast layer, the value is automatically backfilled from the next slower layer — so subsequent reads hit the fastest backend available. Writes propagate to all configured layers simultaneously.
+A PSR-16 cache for PHP with multi-layer chaining. Stack Memory, APCu, Redis, and Database backends in a single `Cache` instance. On a cache miss in a fast layer, the value is automatically backfilled from the next slower layer — so subsequent reads hit the fastest backend available. Writes propagate to all configured layers simultaneously.
 
 ---
 
