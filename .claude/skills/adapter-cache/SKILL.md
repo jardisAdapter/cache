@@ -65,17 +65,10 @@ $persistentCache = new Cache([new CacheRedis($redis, 'persistent'), new CacheDat
 $cache = new Cache();   // internal NullCache, all ops no-op, returns true/default
 ```
 
-## ABSTRACT CACHE (`JardisAdapter\Cache\Adapter\AbstractCache`)
-```php
-__construct(?string $namespace = null)  // immutable after construction
-namespace(): string       // protected
-hash(string $key): string // namespace + sha256(key)
-ttl(int|DateInterval|null): ?int   // → absolute Unix-timestamp or null
-encode(mixed $value): string       // json_encode, fallback serialize
-decode(mixed $value): mixed        // json_decode, fallback unserialize
-isExpired(mixed $result): bool     // checks ['ttl'] <= time()
-```
-Provides default `getMultiple/setMultiple/deleteMultiple` implementations.
+## STORAGE BEHAVIOR
+- Values are JSON-encoded for storage; if JSON encoding is not possible (e.g. certain objects), the adapter falls back to PHP `serialize()`/`unserialize()`.
+- All adapters are immutable after construction (namespace fixed at construction time).
+- All adapters share one internal base providing default `getMultiple`/`setMultiple`/`deleteMultiple` implementations.
 
 ## NAMESPACE
 - Each adapter manages its own namespace via constructor.
