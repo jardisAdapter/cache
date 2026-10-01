@@ -4,7 +4,7 @@ description: PSR-16 multi-layer caching, write-through, namespace isolation. Use
 user-invocable: false
 zone: post-active
 persona: C
-prerequisites: [rules-architecture, rules-patterns]
+prerequisites: [foundation-architecture, foundation-patterns]
 next: []
 ---
 
