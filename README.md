@@ -53,6 +53,21 @@ $cache->set('user:42', $userData, ttl: 300);
 $user = $cache->get('user:42');
 ```
 
+## Lazy Connections
+
+`CacheRedis` and `CacheDatabase` accept either a ready handle or a provider `Closure(): Redis` / `Closure(): PDO`. The provider is **not** called on construction; it runs on the first cache access (any read, write, or `getConnection()`), exactly once — the result is reused afterwards. Exceptions thrown by the provider reach the caller unchanged on that first access (they are not turned into graceful-degradation `false`/`$default`).
+
+```php
+$cache = new Cache([
+    new CacheRedis(function (): Redis {
+        $redis = new Redis();
+        $redis->connect('127.0.0.1', 6379);
+        return $redis;
+    }, 'myapp'),
+    new CacheDatabase(fn(): PDO => $connectionPool->writer()->pdo(), namespace: 'myapp'),
+]);
+```
+
 ## Advanced Usage
 
 ```php
