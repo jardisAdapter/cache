@@ -48,10 +48,12 @@ $cache->getLayers(): array<int, CacheInterface>
 | `CacheNull` | `(?string $namespace = null)` | no-op |
 | `CacheMemory` | `(?string $namespace = null)` | request |
 | `CacheApcu` | `(?string $namespace = null)` | worker (shared FPM) |
-| `CacheRedis` | `(Redis $redis, ?string $namespace = null)` | distributed |
-| `CacheDatabase` | `(PDO $pdo, ?string $cacheTable, ?string $cacheKeyField, ?string $cacheValueField, ?string $cacheExpiresAt, ?string $namespace = null)` | durable |
+| `CacheRedis` | `(Redis\|Closure $redis, ?string $namespace = null)` | distributed |
+| `CacheDatabase` | `(PDO\|Closure $pdo, ?string $cacheTable, ?string $cacheKeyField, ?string $cacheValueField, ?string $cacheExpiresAt, ?string $namespace = null)` | durable |
 
 `CacheRedis::getConnection(): Redis` / `CacheDatabase::getConnection(): PDO`
+
+**Lazy provider:** the first parameter of `CacheRedis`/`CacheDatabase` also accepts `Closure(): Redis` / `Closure(): PDO`. Construction never calls it; the first cache access (including `getConnection()`) calls it once and memoizes the result on success. A provider exception propagates unchanged on that first access (not swallowed by graceful degradation). A ready `Redis`/`PDO` handle stays valid.
 
 ## SETUP
 ```php
@@ -61,6 +63,7 @@ use JardisAdapter\Cache\Adapter\{CacheMemory, CacheApcu, CacheRedis, CacheDataba
 $requestCache   = new Cache([new CacheMemory('request'), new CacheApcu('request')]);
 $sessionCache   = new Cache([new CacheRedis($redis, 'session')]);
 $persistentCache = new Cache([new CacheRedis($redis, 'persistent'), new CacheDatabase($pdo, namespace: 'persistent')]);
+$lazyCache      = new Cache([new CacheRedis(fn(): Redis => $connectRedis(), 'lazy'), new CacheDatabase(fn(): PDO => $connectPdo(), namespace: 'lazy')]);  // opened on first access
 
 $cache = new Cache();   // internal NullCache, all ops no-op, returns true/default
 ```

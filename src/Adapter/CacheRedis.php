@@ -4,20 +4,31 @@ declare(strict_types=1);
 
 namespace JardisAdapter\Cache\Adapter;
 
+use Closure;
 use Redis;
 use RedisException;
 
 /**
  * Redis-based cache implementation.
+ *
+ * Takes either a ready Redis handle or a provider `Closure(): Redis`. A provider
+ * is invoked lazily on the first cache access (including getConnection()) and its
+ * result is reused afterwards; construction never calls it. An exception thrown by
+ * the provider is not swallowed by the graceful degradation of the cache methods,
+ * it reaches the caller unchanged (and the provider is called again on the next access).
  */
 class CacheRedis extends AbstractCache
 {
-    private Redis $redis;
+    /** @var Redis|Closure(): Redis */
+    private Redis|Closure $connection;
 
-    public function __construct(Redis $redis, ?string $namespace = null)
+    /**
+     * @param Redis|Closure(): Redis $redis connected handle or lazy provider
+     */
+    public function __construct(Redis|Closure $redis, ?string $namespace = null)
     {
         parent::__construct($namespace);
-        $this->redis = $redis;
+        $this->connection = $redis;
     }
 
     /**
@@ -29,7 +40,13 @@ class CacheRedis extends AbstractCache
      */
     public function getConnection(): Redis
     {
-        return $this->redis;
+        $connection = $this->connection;
+        if ($connection instanceof Closure) {
+            $connection = $connection();
+            $this->connection = $connection;
+        }
+
+        return $connection;
     }
 
     /**
@@ -40,9 +57,10 @@ class CacheRedis extends AbstractCache
      */
     public function get(string $key, mixed $default = null): mixed
     {
+        $redis = $this->getConnection();
         try {
             $hashedKey = $this->hash($key);
-            $result = $this->redis->get($hashedKey);
+            $result = $redis->get($hashedKey);
 
             return $result !== false ? $this->decode($result) : $default;
         } catch (RedisException $e) {
@@ -59,6 +77,7 @@ class CacheRedis extends AbstractCache
      */
     public function set(string $key, mixed $value, null|int|\DateInterval $ttl = null): bool
     {
+        $redis = $this->getConnection();
         try {
             $ttlValue = $this->ttl($ttl);
 
@@ -73,10 +92,10 @@ class CacheRedis extends AbstractCache
             if ($ttlValue !== null) {
                 // Calculate seconds from now
                 $seconds = max(1, $ttlValue - time());
-                return $this->redis->setex($hashedKey, $seconds, $encodedValue);
+                return $redis->setex($hashedKey, $seconds, $encodedValue);
             }
 
-            return $this->redis->set($hashedKey, $encodedValue);
+            return $redis->set($hashedKey, $encodedValue);
         } catch (RedisException $e) {
             return false;
         }
@@ -89,9 +108,10 @@ class CacheRedis extends AbstractCache
      */
     public function delete(string $key): bool
     {
+        $redis = $this->getConnection();
         try {
             $hashedKey = $this->hash($key);
-            $result = $this->redis->del($hashedKey);
+            $result = $redis->del($hashedKey);
 
             return $result >= 0;
         } catch (RedisException $e) {
@@ -104,12 +124,13 @@ class CacheRedis extends AbstractCache
      */
     public function clear(): bool
     {
+        $redis = $this->getConnection();
         try {
             $namespace = $this->namespace();
 
             // If no namespace is set, clear all keys (dangerous!)
             if (empty($namespace)) {
-                return $this->redis->flushDB();
+                return $redis->flushDB();
             }
 
             // Clear only keys with the specific namespace
@@ -117,10 +138,10 @@ class CacheRedis extends AbstractCache
             $pattern = $namespace . '*';
 
             do {
-                $keys = $this->redis->scan($iterator, $pattern, 100);
+                $keys = $redis->scan($iterator, $pattern, 100);
 
                 if ($keys !== false && count($keys) > 0) {
-                    $this->redis->del($keys);
+                    $redis->del($keys);
                 }
             } while ($iterator > 0);
 
@@ -137,9 +158,10 @@ class CacheRedis extends AbstractCache
      */
     public function has(string $key): bool
     {
+        $redis = $this->getConnection();
         try {
             $hashedKey = $this->hash($key);
-            return $this->redis->exists($hashedKey) > 0;
+            return $redis->exists($hashedKey) > 0;
         } catch (RedisException $e) {
             return false;
         }
